@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Activity, GitBranch, Server, Clock, Database,
-  BarChart3, Timer, Settings, Play, Pause,
+  BarChart3, Timer, Settings, Play,
   RefreshCw, CheckCircle, XCircle, AlertCircle,
-  GitPullRequest, GitCommit, FileText, Zap,
-  ChevronRight, Calendar, Filter, Download,
+  GitPullRequest, Zap,
+  Calendar, Filter,
   ArrowUpRight, ArrowDownRight, Globe, Box
 } from 'lucide-react';
 import * as THREE from 'three';
 import {
-  LineChart, Line, AreaChart, Area, BarChart, Bar,
+  AreaChart, Area, BarChart, Bar,
   PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer, RadarChart,
   PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
@@ -48,7 +48,7 @@ interface ServiceStatus {
 const GitSyncLive: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [timeRange, setTimeRange] = useState('1d');
-  const [serviceStatus, setServiceStatus] = useState<ServiceStatus>({
+  const [serviceStatus] = useState<ServiceStatus>({
     isActive: true,
     uptime: '23h 45m',
     lastCheck: new Date()
@@ -56,7 +56,7 @@ const GitSyncLive: React.FC = () => {
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [selectedRepos, setSelectedRepos] = useState<string[]>([]);
-  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('connected');
+  const [connectionStatus] = useState<'connected' | 'disconnected' | 'reconnecting'>('connected');
   const threeContainerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -103,10 +103,10 @@ const GitSyncLive: React.FC = () => {
     const sampleActivities: ActivityItem[] = Array.from({ length: 20 }, (_, i) => ({
       id: `act-${i}`,
       timestamp: new Date(Date.now() - i * 900000),
-                                                                                   repository: sampleRepos[i % 4].name,
-                                                                                   operation: ['push', 'pull', 'merge', 'conflict'][i % 4] as any,
-                                                                                   status: i % 7 === 0 ? 'failed' : 'success',
-                                                                                   details: `Operation ${i + 1} completed`
+      repository: sampleRepos[i % 4].name,
+      operation: ['push', 'pull', 'merge', 'conflict'][i % 4] as ActivityItem['operation'],
+      status: i % 7 === 0 ? 'failed' : 'success',
+      details: `Operation ${i + 1} completed`
     }));
     setActivities(sampleActivities);
   }, []);
@@ -728,7 +728,7 @@ const GitSyncLive: React.FC = () => {
         <div className="backdrop-blur-xl bg-white/5 rounded-xl border border-white/10 p-6">
         <h3 className="text-lg font-semibold mb-4">Operation Timeline</h3>
         <div className="space-y-4 relative before:absolute before:left-8 before:top-0 before:bottom-0 before:w-0.5 before:bg-gradient-to-b before:from-blue-500 before:to-purple-500">
-        {activities.map((activity, index) => (
+        {activities.map((activity) => (
           <div key={activity.id} className="flex gap-4 items-start">
           <div className="relative z-10 flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-blue-500/50">
           {activity.operation === 'push' ? <ArrowUpRight className="w-6 h-6 text-green-400" /> :
